@@ -1,6 +1,6 @@
 # Delivery money
 
-> PUT /delivery
+> POST /delivery
 
 
 # Parameter
