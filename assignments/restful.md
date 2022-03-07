@@ -1,6 +1,15 @@
 # Delivery money
 
-> POST /delivery
+> POST /delivery X
+
+- feedback : path에는 동사가 포함되지않는 편이 좋다, 동사는 method를 최대한 활용해서 표현해야한다.
+- feedback 후 : 송금 == 거래 생성
+
+> POST /transaction
+> 
+> POST /transaction/transfer
+> 
+> POST /transaction/send
 
 
 # Parameter
