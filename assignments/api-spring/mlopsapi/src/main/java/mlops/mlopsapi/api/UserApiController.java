@@ -105,6 +105,7 @@ public class UserApiController {
         private int age;
     }
 
+
     @Data
     static class UpdateMemberResponse {
         private boolean success;
