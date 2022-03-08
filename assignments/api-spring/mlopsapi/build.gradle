@@ -27,6 +27,8 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0' // 개발 단계에서만 사용, 배포할때 성능 테스트 꼭 필요
 }
 
 tasks.named('test') {
