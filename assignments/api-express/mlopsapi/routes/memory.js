@@ -1,4 +1,5 @@
 var express = require("express");
+const res = require("express/lib/response");
 var router = express.Router();
 var fs = require("fs");
 // var fs = require("fs");
@@ -38,6 +39,8 @@ router.get("/user/:id", function (req, res) {
     res.status(200).json(users[userid]);
   });
 });
+
+res.send();
 
 /*
  * 3. CREATE a user : id 자동 생성 필요

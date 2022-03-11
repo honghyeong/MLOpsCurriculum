@@ -7,7 +7,7 @@ var logger = require("morgan");
 // var memoryRouter = require("./routes/memory");
 // var usersRouter = require("./routes/users");
 // var postgresRouter1 = require("./routes/postgres");
-var postgresRouter2 = require("./routes/postgres2");
+var postgresRouter = require("./routes/pg");
 // var UserHandler = require("./handler/UserHandler");
 
 var app = express();
@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // app.use("/", memoryRouter); local memory db
 // app.use("/", postgresRouter1);
-app.use("/", postgresRouter2);
+app.use("/", postgresRouter);
 // app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler
