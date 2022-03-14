@@ -1,21 +1,27 @@
 var express = require("express");
-const res = require("express/lib/response");
 var router = express.Router();
 var fs = require("fs");
-// var fs = require("fs");
+// require("dotenv").config();
 
+const { LOCAL_DB } = process.env;
 /* GET home page. */
 // router.get("/", function (req, res, next) {
 //   res.render("index", { title: "Express" });
 // });
-
 /*
  * 1. GET all users
  */
 
 router.get("/user", function (req, res) {
-  fs.readFile(__dirname + "/../data/user.json", "utf8", function (err, data) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
+    if (err) {
+      res.status(400);
+      res.send(err.message);
+    }
+    console.log(LOCAL_DB);
     res.status(200).json(JSON.parse(data));
+    // res.send(data);
+    // res.status(200);
   });
 });
 
@@ -25,7 +31,7 @@ router.get("/user", function (req, res) {
 
 router.get("/user/:id", function (req, res) {
   var result = {};
-  fs.readFile(__dirname + "/../data/user.json", "utf8", function (err, data) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     var userid = req.params.id;
     var users = JSON.parse(data);
     if (!users[userid]) {
@@ -40,8 +46,6 @@ router.get("/user/:id", function (req, res) {
   });
 });
 
-res.send();
-
 /*
  * 3. CREATE a user : id 자동 생성 필요
  */
@@ -55,13 +59,13 @@ router.post("/user/:id", function (req, res) {
     return;
   }
 
-  fs.readFile(__dirname + "/../data/user.json", "utf8", function (err, data) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     // ADD
     var users = JSON.parse(data);
     users[req.params.id] = req.body;
 
     fs.writeFile(
-      __dirname + "/../data/user.json",
+      __dirname + LOCAL_DB,
       JSON.stringify(users, null, "\t"),
       "utf8",
       function (err, data) {
@@ -85,7 +89,7 @@ router.put("/user/:id", function (req, res) {
     });
     return;
   }
-  fs.readFile(__dirname + "/../data/user.json", "utf8", function (err, data) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     var users = JSON.parse(data);
 
     if (!users[req.params.id]) {
@@ -97,7 +101,7 @@ router.put("/user/:id", function (req, res) {
     users[req.params.id] = req.body;
 
     fs.writeFile(
-      __dirname + "/../data/user.json",
+      __dirname + LOCAL_DB,
       JSON.stringify(users, null, "\t"),
       "utf8",
       function (err, data) {
@@ -114,7 +118,7 @@ router.put("/user/:id", function (req, res) {
  */
 
 router.delete("/user/:id", function (req, res) {
-  fs.readFile(__dirname + "/../data/user.json", "utf8", function (err, data) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     var users = JSON.parse(data);
 
     if (!users[req.params.id]) {
@@ -127,7 +131,7 @@ router.delete("/user/:id", function (req, res) {
     delete users[req.params.id];
 
     fs.writeFile(
-      __dirname + "/../data/user.json",
+      __dirname + LOCAL_DB,
       JSON.stringify(users, null, "\t"),
       "utf8",
       function (err, data) {

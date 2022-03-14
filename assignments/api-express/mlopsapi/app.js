@@ -3,12 +3,12 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+require("dotenv").config();
 
-// var memoryRouter = require("./routes/memory");
-// var usersRouter = require("./routes/users");
-// var postgresRouter1 = require("./routes/postgres");
-var postgresRouter = require("./routes/pg");
-// var UserHandler = require("./handler/UserHandler");
+// console.log(process.env);
+
+var memoryRouter = require("./routes/memory");
+// var postgresRouter = require("./routes/pg"); // var UserHandler = require("./handler/UserHandler");
 
 var app = express();
 
@@ -22,10 +22,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.use("/", memoryRouter); local memory db
-// app.use("/", postgresRouter1);
-app.use("/", postgresRouter);
-// app.use("/users", usersRouter);
+app.use("/", memoryRouter); // local memory db
+// app.use("/", postgresRouter); // postgres db
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

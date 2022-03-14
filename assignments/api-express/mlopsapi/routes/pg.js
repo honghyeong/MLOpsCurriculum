@@ -2,16 +2,26 @@ var express = require("express");
 var router = express.Router();
 const { Client } = require("pg");
 const Query = require("pg").Query;
-
+// .env
+// require("dotenv").config();
+const { DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT } = process.env;
 /*
  * .git ignore
  */
+// var client = new Client({
+//   user: process.env.USER,
+//   host: process.env.HOST,
+//   database: process.env.DATABASE,
+//   password: process.env.PASSWORD,
+//   port: process.env.PORT,
+// });
 var client = new Client({
-  user: "mlopscur",
-  host: "localhost",
-  database: "mlopscur",
-  password: "mlopscur",
-  port: 5432,
+  // user: USER,
+  user: DB_USER,
+  host: DB_HOST,
+  database: DB_NAME, // dbname 환경변수 에러 ? Why?
+  password: DB_PASSWORD,
+  port: DB_PORT,
 });
 
 client.connect((err) => {
