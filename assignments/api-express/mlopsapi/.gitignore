@@ -3,8 +3,4 @@
 
 # pg-promise
 /model
-/views
 /handler
-
-# public
-/public
