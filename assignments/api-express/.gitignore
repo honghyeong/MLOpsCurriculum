@@ -1,0 +1,8 @@
+# compiled output
+/node_modules
+
+# pg-promise
+/model
+/views
+/handler
+
