@@ -5,16 +5,11 @@ const Query = require("pg").Query;
 // .env
 // require("dotenv").config();
 const { DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT } = process.env;
+
 /*
- * .git ignore
- */
-// var client = new Client({
-//   user: process.env.USER,
-//   host: process.env.HOST,
-//   database: process.env.DATABASE,
-//   password: process.env.PASSWORD,
-//   port: process.env.PORT,
-// });
+DB Connect
+*/
+
 var client = new Client({
   // user: USER,
   user: DB_USER,
