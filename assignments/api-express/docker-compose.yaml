@@ -1,0 +1,21 @@
+version: "3"
+services:
+  db:
+    build: ./db
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: postgres
+    restart: always
+  web:
+    build: ./mlopsapi
+    environment:
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_HOST: db
+      DB_NAME: postgres
+      DB_PASSWORD: 1234
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: on-failure
