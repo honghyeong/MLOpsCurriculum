@@ -12,12 +12,7 @@ services:
     # pg.js connect postgres .env var
     env_file:
       - ./mlopsapi/.env
-    # environment:
-    #   DB_PORT: 5432
-    #   DB_USER: postgres
-    #   DB_HOST: db
-    #   DB_NAME: postgres
-    #   DB_PASSWORD: 1234
+
     ports:
       - "3000:3000"
 
