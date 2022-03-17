@@ -5,8 +5,6 @@ create table users(
     age int 
 );
 
-
-
 insert into users(name,age) values('sm1',30);
 insert into users(name,age) values('sm2',30);
 insert into users(name,age) values('sm3',30);
