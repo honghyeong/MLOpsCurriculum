@@ -4,10 +4,7 @@ var fs = require("fs");
 // require("dotenv").config();
 // const LOCAL_DB = "/../data/user.json";
 const { LOCAL_DB } = process.env;
-/* GET home page. */
-// router.get("/", function (req, res, next) {
-//   res.render("index", { title: "Express" });
-// });
+
 /*
  * 1. GET all users
  */
@@ -18,10 +15,7 @@ router.get("/user", function (req, res) {
       res.status(400);
       res.send(err.message);
     }
-    console.log(LOCAL_DB);
-    res.status(200).json(JSON.parse(data));
-    // res.send(data);
-    // res.status(200);
+    res.status(200).send(JSON.parse(data));
   });
 });
 
@@ -30,30 +24,33 @@ router.get("/user", function (req, res) {
  */
 
 router.get("/user/:id", function (req, res) {
-  var result = {};
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
-    var userid = req.params.id;
-    var users = JSON.parse(data);
-    if (!users[userid]) {
-      // result["success"] = false;
-      res.status(404).json({
+    const userId = req.params.id;
+    const users = JSON.parse(data);
+    const findUser = users.find((u) => u.id == userId);
+    if (!findUser) {
+      res.status(404).send({
         success: false,
+        message: userId + " does not exist",
       });
       return;
     }
+    if (err) {
+      res.status(400).send(err.message);
+    }
 
-    res.status(200).json(users[userid]);
+    res.status(200).send(findUser);
   });
 });
 
 /*
- * 3. CREATE a user : id 자동 생성 필요
+ * 3. CREATE a user
  */
 
-router.post("/user/:id", function (req, res) {
-  var result = {};
+router.post("/user/", function (req, res) {
+  const result = {};
   if (!req.body["age"] || !req.body["name"]) {
-    res.status(200).json({
+    res.status(400).json({
       success: false,
     });
     return;
@@ -61,17 +58,31 @@ router.post("/user/:id", function (req, res) {
 
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     // ADD
-    var users = JSON.parse(data);
-    users[req.params.id] = req.body;
+    const users = JSON.parse(data);
+    console.log(users.length);
+    const count = users[users.length - 1].id + 1;
+    const newUser = { id: count, ...req.body };
+    const newUserList = users.concat(newUser);
+    const empty = [];
+    console.log(typeof empty);
+    const nameDupCheck = users.find((u) => u.name == req.body["name"]);
+    if (nameDupCheck) {
+      res.status(400).json({
+        success: false,
+        error: req.body["name"] + " name already exists",
+      });
+      return;
+    }
 
     fs.writeFile(
       __dirname + LOCAL_DB,
-      JSON.stringify(users, null, "\t"),
+      JSON.stringify(newUserList, null, "\t"),
       "utf8",
       function (err, data) {
         res.status(200).json({
           success: true,
         });
+        return;
       }
     );
   });
@@ -82,7 +93,6 @@ router.post("/user/:id", function (req, res) {
  */
 
 router.put("/user/:id", function (req, res) {
-  var result = {};
   if (!req.body["name"] || !req.body["age"]) {
     res.status(400).json({
       success: false,
@@ -90,19 +100,25 @@ router.put("/user/:id", function (req, res) {
     return;
   }
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
-    var users = JSON.parse(data);
-
-    if (!users[req.params.id]) {
+    const users = JSON.parse(data);
+    const findUser = users.find((u) => u.id == req.params.id);
+    if (!findUser) {
       res.status(404).json({
         success: false,
       });
       return;
     }
-    users[req.params.id] = req.body;
+    const newUserList = Object.values(users).map((u) => {
+      if (u.id == req.params.id) {
+        u.name = req.body["name"];
+        u.age = req.body["age"];
+      }
+      return u;
+    });
 
     fs.writeFile(
       __dirname + LOCAL_DB,
-      JSON.stringify(users, null, "\t"),
+      JSON.stringify(newUserList, null, "\t"),
       "utf8",
       function (err, data) {
         res.status(200).json({
@@ -110,6 +126,7 @@ router.put("/user/:id", function (req, res) {
         });
       }
     );
+    return;
   });
 });
 
@@ -119,20 +136,19 @@ router.put("/user/:id", function (req, res) {
 
 router.delete("/user/:id", function (req, res) {
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
-    var users = JSON.parse(data);
-
-    if (!users[req.params.id]) {
+    const users = JSON.parse(data);
+    const newUserList = users.filter((u) => u.id != req.params.id);
+    const findUSer = users.find((u) => u.id == req.params.id);
+    if (!findUSer) {
       res.status(404).json({
         success: false,
       });
       return;
     }
 
-    delete users[req.params.id];
-
     fs.writeFile(
       __dirname + LOCAL_DB,
-      JSON.stringify(users, null, "\t"),
+      JSON.stringify(newUserList, null, "\t"),
       "utf8",
       function (err, data) {
         res.status(200).json({
