@@ -9,7 +9,6 @@ describe("GET /user", () => {
         .get("/user")
         .end((err, res) => {
           res.body.should.be.instanceOf(Array);
-          res.body.should.have.lengthOf(4);
           done();
         });
     });
