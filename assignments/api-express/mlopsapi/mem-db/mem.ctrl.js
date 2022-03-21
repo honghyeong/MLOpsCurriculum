@@ -7,7 +7,7 @@ const LOCAL_DB = "/user.json";
  * 1. GET all users
  */
 
-const getUser = function (req, res) {
+const getUsers = function (req, res) {
   fs.readFile(__dirname + LOCAL_DB, "utf8", async function (err, data) {
     if (err) {
       return await res.status(400).end();
@@ -20,25 +20,20 @@ const getUser = function (req, res) {
  * 2. GET a user
  */
 
-router.get("/user/:id", function (req, res) {
-  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
-    const userId = req.params.id;
+const getUser = function (req, res) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", async function (err, data) {
+    const userId = parseInt(req.params.id);
+    if (Number.isNaN(userId)) {
+      return await res.status(400).end();
+    }
     const users = JSON.parse(data);
     const findUser = users.find((u) => u.id == userId);
     if (!findUser) {
-      res.status(404).send({
-        success: false,
-        message: userId + " does not exist",
-      });
-      return;
+      return await res.status(404).end();
     }
-    if (err) {
-      res.status(400).send(err.message);
-    }
-
     res.status(200).send(findUser);
   });
-});
+};
 
 /*
  * 3. CREATE a user
@@ -157,5 +152,6 @@ router.delete("/user/:id", function (req, res) {
 });
 
 module.exports = {
+  getUsers,
   getUser,
 };

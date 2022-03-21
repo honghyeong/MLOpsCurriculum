@@ -7,7 +7,7 @@ const memoryRouter = require("./mem-db/index");
 // const postgreRouter = require("/routes/pg-router");
 
 // app.use("/", postgresRouter); // postgres db
-if (process.env.NODE_ENV === "test") {
+if (process.env.NODE_ENV !== "test") {
   app.use(logger("dev"));
 }
 
