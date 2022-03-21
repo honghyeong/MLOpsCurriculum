@@ -27,7 +27,7 @@ const getUser = function (req, res) {
       return await res.status(400).end();
     }
     const users = JSON.parse(data);
-    const findUser = users.find((u) => u.id == userId);
+    const findUser = users.find((u) => u.id === userId);
     if (!findUser) {
       return await res.status(404).end();
     }
@@ -74,26 +74,23 @@ const createUser = function (req, res) {
  * 4. Update a users
  */
 
-router.put("/user/:id", function (req, res) {
+const updateUser = function (req, res) {
   if (!req.body["name"] || !req.body["age"]) {
-    res.status(400).json({
-      success: false,
-    });
-    return;
+    return res.status(400).end();
   }
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     const users = JSON.parse(data);
-    const findUser = users.find((u) => u.id == req.params.id);
-    if (!findUser) {
-      res.status(404).json({
-        success: false,
-      });
-      return;
+    const userId = parseInt(req.params.id);
+    const findUser = users.find((u) => u.id === userId);
+    if (findUser) {
+      return res.status(409).end();
     }
-    const newUserList = Object.values(users).map((u) => {
-      if (u.id == req.params.id) {
-        u.name = req.body["name"];
-        u.age = req.body["age"];
+    findUser.name = req.body["name"];
+    findUser.age = req.body["age"];
+
+    const newUserList = users.map((u) => {
+      if (u.id === userId) {
+        return findUser;
       }
       return u;
     });
@@ -102,15 +99,16 @@ router.put("/user/:id", function (req, res) {
       __dirname + LOCAL_DB,
       JSON.stringify(newUserList, null, "\t"),
       "utf8",
-      function (err, data) {
-        res.status(200).json({
-          success: true,
-        });
+      async function (err, data) {
+        if (err) {
+          return await res.status(500).end();
+        }
+
+        return res.status(200).json(findUser);
       }
     );
-    return;
   });
-});
+};
 
 /*
  * 5. Delete a users
@@ -145,4 +143,5 @@ module.exports = {
   getUsers,
   getUser,
   createUser,
+  updateUser,
 };
