@@ -1,20 +1,20 @@
 var express = require("express");
 var router = express.Router();
 var fs = require("fs");
-const LOCAL_DB = "/../data/user.json";
+const LOCAL_DB = "/user.json";
+
 /*
  * 1. GET all users
  */
 
-router.get("/user", function (req, res) {
-  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
+const getUser = function (req, res) {
+  fs.readFile(__dirname + LOCAL_DB, "utf8", async function (err, data) {
     if (err) {
-      res.status(400);
-      res.send(err.message);
+      return await res.status(400).end();
     }
-    res.status(200).send(JSON.parse(data));
+    res.status(200).json(JSON.parse(data));
   });
-});
+};
 
 /*
  * 2. GET a user
@@ -156,4 +156,6 @@ router.delete("/user/:id", function (req, res) {
   });
 });
 
-module.exports = router;
+module.exports = {
+  getUser,
+};
