@@ -85,10 +85,16 @@ const updateUser = function (req, res) {
     if (Number.isNaN(userId)) {
       return res.status(400).end();
     }
-    const findUser = users.find((u) => u.id === userId);
-    if (findUser) {
+    let findUser = users.find((u) => u.id === userId);
+    if (!findUser) {
+      return res.status(404).end();
+    }
+
+    const nameDupCheck = users.find((u) => u.name === req.body["name"]);
+    if (nameDupCheck) {
       return res.status(409).end();
     }
+
     findUser.name = req.body["name"];
     findUser.age = req.body["age"];
 

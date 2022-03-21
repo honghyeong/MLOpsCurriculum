@@ -137,10 +137,10 @@ describe("PUT /user/:id", () => {
         .end(done);
     });
     it("should return 404 if id does not exist", (done) => {
-      request(app).put("/user/one").send({ age: 27 }).expect(400).end(done);
+      request(app).put("/user/500").send({ age: 27 }).expect(400).end(done);
     });
     it("should return 400 if id is not number", (done) => {
-      request(app).put("/user/500").send({ age: 27 }).expect(400).end(done);
+      request(app).put("/user/one").send({ age: 27 }).expect(400).end(done);
     });
     it("should return 400 if name not in req ", (done) => {
       request(app).put("/user/3").send({ age: 27 }).expect(400).end(done);
