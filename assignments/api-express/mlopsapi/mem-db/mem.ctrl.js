@@ -1,3 +1,4 @@
+const { resolveSoa } = require("dns");
 var express = require("express");
 var router = express.Router();
 var fs = require("fs");
@@ -81,6 +82,9 @@ const updateUser = function (req, res) {
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     const users = JSON.parse(data);
     const userId = parseInt(req.params.id);
+    if (Number.isNaN(userId)) {
+      return res.status(400).end();
+    }
     const findUser = users.find((u) => u.id === userId);
     if (findUser) {
       return res.status(409).end();
@@ -114,34 +118,39 @@ const updateUser = function (req, res) {
  * 5. Delete a users
  */
 
-router.delete("/user/:id", function (req, res) {
+const deleteUser = function (req, res) {
   fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
     const users = JSON.parse(data);
-    const newUserList = users.filter((u) => u.id != req.params.id);
-    const findUSer = users.find((u) => u.id == req.params.id);
-    if (!findUSer) {
-      res.status(404).json({
-        success: false,
-      });
-      return;
+    const userId = parseInt(req.params.id);
+    if (Number.isNaN(userId)) {
+      return res.status(400).end();
     }
+    const findUser = users.find((u) => u.id === userId);
+    if (!findUser) {
+      return res.status(404).end();
+    }
+    console.log(findUser);
+    const newUserList = users.filter((u) => u.id !== userId);
 
     fs.writeFile(
       __dirname + LOCAL_DB,
       JSON.stringify(newUserList, null, "\t"),
       "utf8",
-      function (err, data) {
-        res.status(200).json({
-          success: true,
-        });
+      async function (err, data) {
+        if (err) {
+          return await res.status(500).end();
+        }
+
+        res.status(200).json(findUser);
       }
     );
   });
-});
+};
 
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUser,
+  deleteUser,
 };

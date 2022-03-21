@@ -128,7 +128,7 @@ describe("PUT /user/:id", () => {
     });
   });
 
-  describe.only("failure case", () => {
+  describe("failure case", () => {
     it("should return 409 if name already exists", (done) => {
       request(app)
         .put("/user/4")
@@ -151,6 +151,33 @@ describe("PUT /user/:id", () => {
         .send({ name: "seokmin" })
         .expect(400)
         .end(done);
+    });
+  });
+});
+
+/**
+ * 5. Delete a User
+ */
+describe.only("DELETE /user/:id", () => {
+  describe("success case", () => {
+    it("should return deleted user id,name,age", (done) => {
+      request(app)
+        .delete("/user/1")
+        .end((err, res) => {
+          res.body.should.have.property("id"); // hard
+          res.body.should.have.property("name");
+          res.body.should.have.property("age");
+          done();
+        });
+    });
+  });
+
+  describe("failure case", () => {
+    it("should return 400 if id is not Number", (done) => {
+      request(app).get("/user/one").expect(400).end(done);
+    });
+    it("should return 404 if id not found ", (done) => {
+      request(app).get("/user/5").expect(404).end(done);
     });
   });
 });

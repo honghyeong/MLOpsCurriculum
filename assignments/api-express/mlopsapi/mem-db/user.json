@@ -1,26 +1,21 @@
 [
-	{
-		"id": 1,
-		"name": "sm1",
-		"age": 56
-	},
-	{
-		"id": 2,
-		"name": "sm2",
-		"age": 67
-	},
-	{
-		"id": 3,
-		"name": "seokmin"
-	},
-	{
-		"id": 4,
-		"name": "sm",
-		"age": 26
-	},
-	{
-		"id": 5,
-		"name": "seokmin",
-		"age": 26
-	}
+  {
+    "id": 1,
+    "name": "sm1",
+    "age": 56
+  },
+  {
+    "id": 2,
+    "name": "sm2",
+    "age": 67
+  },
+  {
+    "id": 3,
+    "name": "seokmin"
+  },
+  {
+    "id": 4,
+    "name": "sm",
+    "age": 26
+  }
 ]
