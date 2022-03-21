@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const ctrl = require("./mem.service");
+const service = require("./mem.service");
 
-router.get("/", ctrl.getUsers);
-router.get("/:id", ctrl.getUser);
-router.post("/", ctrl.createUser);
-router.put("/:id", ctrl.updateUser);
-router.delete("/:id", ctrl.deleteUser);
+router.get("/", service.getUsers);
+router.get("/:id", service.getUser);
+router.post("/", service.createUser);
+router.put("/:id", service.updateUser);
+router.delete("/:id", service.deleteUser);
 
 module.exports = router;
