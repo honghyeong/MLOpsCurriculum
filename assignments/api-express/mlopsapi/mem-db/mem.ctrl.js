@@ -1,10 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var fs = require("fs");
-// require("dotenv").config();
-// const LOCAL_DB = "/../data/user.json";
-const { LOCAL_DB } = process.env;
-
+const LOCAL_DB = "/../data/user.json";
 /*
  * 1. GET all users
  */
