@@ -4,7 +4,7 @@ const ctrl = require("./mem.ctrl");
 
 router.get("/", ctrl.getUsers);
 router.get("/:id", ctrl.getUser);
-// router.post("/", ctrl.createUser);
+router.post("/", ctrl.createUser);
 // router.put("/:id", ctrl.updateUser);
 // router.delete("/:id", ctrl.deleteUser);
 

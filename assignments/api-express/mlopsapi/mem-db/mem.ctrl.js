@@ -39,46 +39,36 @@ const getUser = function (req, res) {
  * 3. CREATE a user
  */
 
-router.post("/user/", function (req, res) {
-  const result = {};
+const createUser = function (req, res) {
   if (!req.body["age"] || !req.body["name"]) {
-    res.status(400).json({
-      success: false,
-    });
-    return;
+    return res.status(400).end();
   }
 
-  fs.readFile(__dirname + LOCAL_DB, "utf8", function (err, data) {
-    // ADD
+  fs.readFile(__dirname + LOCAL_DB, "utf8", async function (err, data) {
     const users = JSON.parse(data);
-    console.log(users.length);
+    // auto increment id
     const count = users[users.length - 1].id + 1;
     const newUser = { id: count, ...req.body };
     const newUserList = users.concat(newUser);
-    const empty = [];
-    console.log(typeof empty);
+
     const nameDupCheck = users.find((u) => u.name == req.body["name"]);
     if (nameDupCheck) {
-      res.status(400).json({
-        success: false,
-        error: req.body["name"] + " name already exists",
-      });
-      return;
+      return res.status(409).end();
     }
 
     fs.writeFile(
       __dirname + LOCAL_DB,
       JSON.stringify(newUserList, null, "\t"),
       "utf8",
-      function (err, data) {
-        res.status(200).json({
-          success: true,
-        });
-        return;
+      async function (err, data) {
+        if (err) {
+          return await res.status(500).end();
+        }
+        res.send(newUser);
       }
     );
   });
-});
+};
 
 /*
  * 4. Update a users
@@ -154,4 +144,5 @@ router.delete("/user/:id", function (req, res) {
 module.exports = {
   getUsers,
   getUser,
+  createUser,
 };
