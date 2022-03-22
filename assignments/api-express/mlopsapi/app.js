@@ -3,7 +3,7 @@ var app = express();
 var logger = require("morgan");
 require("dotenv").config();
 
-const memoryRouter = require("./mem-db/mem.ctrl");
+const memoryRouter = require("../routes/mem.route");
 // const postgreRouter = require("/routes/pg-router");
 
 // app.use("/", postgresRouter); // postgres db
