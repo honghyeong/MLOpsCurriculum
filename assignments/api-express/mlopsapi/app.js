@@ -3,8 +3,8 @@ var app = express();
 var logger = require("morgan");
 require("dotenv").config();
 
-const memoryRouter = require("../routes/mem.route");
-// const postgreRouter = require("/routes/pg-router");
+// const userRouter = require("./routes/mem.route");
+const userRouter = require("./routes/pg.route");
 
 // app.use("/", postgresRouter); // postgres db
 if (process.env.NODE_ENV !== "test") {
@@ -14,6 +14,6 @@ if (process.env.NODE_ENV !== "test") {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/user", memoryRouter);
+app.use("/user", userRouter);
 
 module.exports = app;
