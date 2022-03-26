@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/pg.service");
+const userController = require("../controllers/pg");
 
 router.get("/", userController.getUsers);
 router.get("/:id", userController.getUser);

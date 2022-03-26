@@ -16,4 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", userRouter);
 
+app.listen(3000, () => {
+  console.log(`App running on port 3000.`);
+});
+
 module.exports = app;

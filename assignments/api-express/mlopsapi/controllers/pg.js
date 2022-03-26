@@ -1,15 +1,13 @@
 var express = require("express");
 const { Client } = require("pg");
 const Query = require("pg").Query;
-// .env
-// require("dotenv").config();
-const { DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT } = process.env;
 
+const { DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT } = process.env;
 /*
 DB Connect
 */
 
-var client = new Client({
+const client = new Client({
   // user: USER,
   user: DB_USER,
   host: DB_HOST,
@@ -18,14 +16,28 @@ var client = new Client({
   port: DB_PORT,
 });
 
-client.connect((err) => {
-  if (err) {
-    console.error("connection error", err.stack);
-  } else {
-    console.log("success!");
+const initQuery = `CREATE TABLE IF NOT EXISTS users(
+      id SERIAL PRIMARY KEY,  
+      name varchar UNIQUE NOT NULL,
+      age int NOT NULL
+  );`;
+
+const init = async (query) => {
+  try {
+    await client.connect();
+    await client.query(query);
+    return true;
+  } catch (error) {
+    console.log(error.stack);
+    return false;
+  }
+};
+
+init(initQuery).then((result) => {
+  if (result) {
+    console.log("Table created");
   }
 });
-
 /*
  * 1. GET all users
  */

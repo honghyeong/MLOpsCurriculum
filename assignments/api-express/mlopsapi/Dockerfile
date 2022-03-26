@@ -4,9 +4,10 @@ WORKDIR /app
 COPY *.json ./
 
 RUN npm install
-
-COPY . .
+RUN apk update && apk add bash
 
 EXPOSE 3000
+
+COPY . .
 
 CMD [ "npm", "start" ]
