@@ -1,6 +1,6 @@
-var express = require("express");
-var app = express();
-var logger = require("morgan");
+const express = require("express");
+const app = express();
+const logger = require("morgan");
 require("dotenv").config();
 
 // const userRouter = require("./routes/mem.route");
