@@ -7,7 +7,7 @@ require("dotenv").config();
 const userRouter = require("./routes/pg.route");
 
 // app.use("/", postgresRouter); // postgres db
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV === "test") {
   app.use(logger("dev"));
 }
 
