@@ -1,0 +1,22 @@
+version: "3"
+services:
+  db:
+    build: ./db
+    # postgres init env var
+    env_file:
+      - ./db/.env
+    restart: always
+
+  web:
+    build: ./mlopsapi
+    # pg.js connect postgres .env var
+    env_file:
+      - ./mlopsapi/.env
+
+    ports:
+      - "3000:3000"
+
+    # run postgres container before server container start
+    depends_on:
+      - db
+    restart: on-failure
