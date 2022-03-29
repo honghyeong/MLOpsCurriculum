@@ -1,8 +1,9 @@
-version: "3"
+version: "2"
 services:
   db:
-    build: ./db
-    # image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/compose-db
+    platform: linux/amd64
+    image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/db
+    # image: postgres
     # volumes:
     #   - "./postgresql/data:/var/lib/postgresql/data" # 도커 컨테이너가 종료되면 데이터베이스도 사라져 버린다. 컨테이너가 종료돼도 데이터를 보존하기 위해 postgresql/data 폴더에 데이터베이스 데이터들을 저장한다.
     environment:
@@ -12,8 +13,9 @@ services:
     ports:
       - "5432:5432"
   node:
-    build: ./mlopsapi
-    # image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/compose-express
+    # build: ./mlopsapi
+    image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/node
+    platform: linux/amd64
     environment:
       DB_PORT: "${DB_PORT}"
       DB_USER: "${DB_USER}"

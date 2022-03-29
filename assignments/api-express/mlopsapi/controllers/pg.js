@@ -35,11 +35,11 @@ client.connect();
 //   }
 // };
 
-init(initQuery).then((result) => {
-  if (result) {
-    console.log("Table created");
-  }
-});
+// init(initQuery).then((result) => {
+//   if (result) {
+//     console.log("Table created");
+//   }
+// });
 /*
  * 1. GET all users
  */

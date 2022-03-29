@@ -1,8 +1,7 @@
 FROM node:14-alpine
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY *.json ./
-
 RUN npm install
 RUN apk update && apk add bash
 
