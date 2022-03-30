@@ -1,11 +1,393 @@
-version: 1
-task_definition:
-  services:
-    node:
-      # t2.micro 최대 사용 가능량은..
-      cpu_shares: 1024
-      mem_limit: 983m
-
-    db:
-      cpu_shares: 1024
-      mem_limit: 983m
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CloudMap:
+    Properties:
+      Description: Service Map for Docker Compose project mlopscurriculum-expressjs
+      Name: mlopscurriculum-expressjs.local
+      Vpc: vpc-0a0d2e633066636ed
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+  Cluster:
+    Properties:
+      ClusterName: mlopscurriculum-expressjs
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+    Type: AWS::ECS::Cluster
+  DbService:
+    DependsOn:
+      - DbTCP5432Listener
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+          - Cluster
+          - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: db
+          ContainerPort: 5432
+          TargetGroupArn:
+            Ref: DbTCP5432TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - Ref: DefaultNetwork
+          Subnets:
+            - subnet-07d903f2986f27fb6
+            - subnet-02a572c6ec0d3e435
+            - subnet-0f8c786af15862a46
+            - subnet-0736354c2d676288f
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+        - RegistryArn:
+            Fn::GetAtt:
+              - DbServiceDiscoveryEntry
+              - Arn
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+        - Key: com.docker.compose.service
+          Value: db
+      TaskDefinition:
+        Ref: DbTaskDefinition
+    Type: AWS::ECS::Service
+  DbServiceDiscoveryEntry:
+    Properties:
+      Description: '"db" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+          - TTL: 60
+            Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: db
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  DbTCP5432Listener:
+    Properties:
+      DefaultActions:
+        - ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn:
+                  Ref: DbTCP5432TargetGroup
+          Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 5432
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  DbTCP5432TargetGroup:
+    Properties:
+      Port: 5432
+      Protocol: TCP
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+      TargetType: ip
+      VpcId: vpc-0a0d2e633066636ed
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  DbTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+        - Command:
+            - ap-northeast-2.compute.internal
+            - mlopscurriculum-expressjs.local
+          Essential: false
+          Image: docker/ecs-searchdomain-sidecar:1.0
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Ref: LogGroup
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: mlopscurriculum-expressjs
+          Name: Db_ResolvConf_InitContainer
+        - DependsOn:
+            - Condition: SUCCESS
+              ContainerName: Db_ResolvConf_InitContainer
+          Environment:
+            - Name: POSTGRES_DB
+              Value: mlops
+            - Name: POSTGRES_PASSWORD
+              Value: postgres
+            - Name: POSTGRES_USER
+              Value: seokmin
+          Essential: true
+          Image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/db:latest@sha256:5c098baea9e64236be36a05ac73a7ba28d31805c4979a95aa8a36b9dc410492d
+          LinuxParameters: {}
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Ref: LogGroup
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: mlopscurriculum-expressjs
+          Name: db
+          PortMappings:
+            - ContainerPort: 5432
+              HostPort: 5432
+              Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: DbTaskExecutionRole
+      Family: mlopscurriculum-expressjs-db
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  DbTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Condition: {}
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+        - Key: com.docker.compose.service
+          Value: db
+    Type: AWS::IAM::Role
+  Default3000Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: node:3000/tcp on default network
+      FromPort: 3000
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 3000
+    Type: AWS::EC2::SecurityGroupIngress
+  Default5432Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: db:5432/tcp on default network
+      FromPort: 5432
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 5432
+    Type: AWS::EC2::SecurityGroupIngress
+  DefaultNetwork:
+    Properties:
+      GroupDescription: mlopscurriculum-expressjs Security Group for default network
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+        - Key: com.docker.compose.network
+          Value: mlopscurriculum-expressjs_default
+      VpcId: vpc-0a0d2e633066636ed
+    Type: AWS::EC2::SecurityGroup
+  DefaultNetworkIngress:
+    Properties:
+      Description: Allow communication within network default
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Ref: DefaultNetwork
+    Type: AWS::EC2::SecurityGroupIngress
+  LoadBalancer:
+    Properties:
+      LoadBalancerAttributes:
+        - Key: load_balancing.cross_zone.enabled
+          Value: "true"
+      Scheme: internet-facing
+      Subnets:
+        - subnet-07d903f2986f27fb6
+        - subnet-02a572c6ec0d3e435
+        - subnet-0f8c786af15862a46
+        - subnet-0736354c2d676288f
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+      Type: network
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  LogGroup:
+    Properties:
+      LogGroupName: /docker-compose/mlopscurriculum-expressjs
+    Type: AWS::Logs::LogGroup
+  NodeService:
+    DependsOn:
+      - NodeTCP3000Listener
+      - DbService
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+          - Cluster
+          - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: node
+          ContainerPort: 3000
+          TargetGroupArn:
+            Ref: NodeTCP3000TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - Ref: DefaultNetwork
+          Subnets:
+            - subnet-07d903f2986f27fb6
+            - subnet-02a572c6ec0d3e435
+            - subnet-0f8c786af15862a46
+            - subnet-0736354c2d676288f
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+        - RegistryArn:
+            Fn::GetAtt:
+              - NodeServiceDiscoveryEntry
+              - Arn
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+        - Key: com.docker.compose.service
+          Value: node
+      TaskDefinition:
+        Ref: NodeTaskDefinition
+    Type: AWS::ECS::Service
+  NodeServiceDiscoveryEntry:
+    Properties:
+      Description: '"node" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+          - TTL: 60
+            Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: node
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  NodeTCP3000Listener:
+    Properties:
+      DefaultActions:
+        - ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn:
+                  Ref: NodeTCP3000TargetGroup
+          Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 3000
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  NodeTCP3000TargetGroup:
+    Properties:
+      Port: 3000
+      Protocol: TCP
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+      TargetType: ip
+      VpcId: vpc-0a0d2e633066636ed
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  NodeTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+        - Command:
+            - ap-northeast-2.compute.internal
+            - mlopscurriculum-expressjs.local
+          Essential: false
+          Image: docker/ecs-searchdomain-sidecar:1.0
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Ref: LogGroup
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: mlopscurriculum-expressjs
+          Name: Node_ResolvConf_InitContainer
+        - Command:
+            - bash
+            - -c
+            - while !</dev/tcp/db/5432; do sleep 1; done; npm start
+          DependsOn:
+            - Condition: SUCCESS
+              ContainerName: Node_ResolvConf_InitContainer
+          Environment:
+            - Name: DB_HOST
+              Value: db
+            - Name: DB_NAME
+              Value: mlops
+            - Name: DB_PASSWORD
+              Value: postgres
+            - Name: DB_PORT
+              Value: "5432"
+            - Name: DB_USER
+              Value: seokmin
+          Essential: true
+          Image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/node:latest@sha256:c83d51777de7bfa096c4afcca1b82abe8c0fcb1cfe8bf781dba14022940ce90c
+          LinuxParameters: {}
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Ref: LogGroup
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: mlopscurriculum-expressjs
+          Name: node
+          PortMappings:
+            - ContainerPort: 3000
+              HostPort: 3000
+              Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: NodeTaskExecutionRole
+      Family: mlopscurriculum-expressjs-node
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  NodeTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Condition: {}
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+        - Key: com.docker.compose.project
+          Value: mlopscurriculum-expressjs
+        - Key: com.docker.compose.service
+          Value: node
+    Type: AWS::IAM::Role
