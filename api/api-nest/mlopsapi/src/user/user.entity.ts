@@ -8,6 +8,6 @@ export class User {
   @Column({ unique: true })
   name: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   age: number;
 }

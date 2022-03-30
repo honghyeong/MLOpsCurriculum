@@ -4908,6 +4908,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeorm-fixtures@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/typeorm-fixtures/-/typeorm-fixtures-1.0.2.tgz#64e3a472ef6deb09add82a754a0a5a116c83c4b6"
+  integrity sha512-WgpmUAZQJFCwKb1C+hfHARh2pXjjR4QYT8zw7l1oc8g3j4SWUr0fYL0N7ltD1ytPwbuGZNPzXFDMB/k04Cuifw==
+
 typeorm@0.2:
   version "0.2.45"
   resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.45.tgz#e5bbb3af822dc4646bad96cfa48cd22fa4687cea"
