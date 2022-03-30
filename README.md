@@ -6,8 +6,13 @@ I’m an MLOps Engineer at Corca.
 
 # Phase 1
 
-- `EC2 endpoint : 3.34.122.192:3000`
-- `ECS endpoint : 3.38.172.73:3000`
+> `EC2 endpoint : 3.34.122.192:3000`
+> <br>
+
+> `ECS endpoint : 3.38.172.73:3000`
+
+<br>
+<br>
 
 ## summary
 
@@ -15,6 +20,8 @@ I’m an MLOps Engineer at Corca.
 
 <!-- - MLOps라는 매우 생소한 직무에 대하여, MLOps의 정의는 무엇인지 DevOps의 정의를 통하여 알 수 있다. MLOps의 역할은 ML product 배포의 자동화(CI/CD)와 테스팅 자동화, 모니터링을 통해서 더 나은 모델을 기반으로 ML Product를 안정적으로 개발하고 빠르게 배포하여 더 나은 product를 지속적으로 공개하고, 시장에서 유리한 포지션을 점할 수 있게 된다.
 -  -->
+<br>
+<br>
 
 ## Review
 
@@ -24,7 +31,15 @@ I’m an MLOps Engineer at Corca.
 - 특히, Docker, Docker-compose, EC2, ECS 배포를 공부하며 많은 어려움을 겪어서 Computer Network, Computer Architecture에 대해 좀 더 이해하는 시간을 가질 수 있었다.
 - 서버 개발과 배포에 기초가 되는 부분을 너무 잘 준비돼있어, Phase 1에서만 해도 많이 성장함을 느낄 수 있었다. 앞으로 얼마나 더 성장할 수 있을지 기대되고 더 노력하고 싶어진다.
 
+<br>
+<br>
+
 ## Feedback
 
 - API 개발 명세를 바탕으로 TDD를 통해 코드를 짠다면 더욱 체계적인 서버 개발을 익힐 수 있지 않을까 생각한다. 하지만, TDD에 성능테스트가 있어서 지금 커리큘럼도 충분히 좋은 것 같다!
 - 내용이 알기쉽게 잘 정리돼있어 서버 개발과 배포에 기초가 되는 부분을 잘 배울 수 있었다.
+- 어려웠던 점 : mac m1 환경에서 docker build default architecture가 arm64 이라서 exec format error를 겪어서 시간 소요가 많았다. docker buildx build --platform=linux/amd64 옵션을 통해서 빌드하고 ECR에 push해야 ecs, docker ecs cli 에서 문제가 생기지않으므로 다음 커리큘럼 진행자에게 도움이 되었으면 한다. [link 1](https://appleg1226.tistory.com/35)
+
+```
+docker buildx build --platform=linux/amd64 -t <tag> .
+```
