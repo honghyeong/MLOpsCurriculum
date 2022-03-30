@@ -6,7 +6,7 @@ I’m an MLOps Engineer at Corca.
 
 ## Phase 1
 
-> `EC2 endpoint : 3.34.122.192:3000` > <br>
+> `EC2 endpoint : 3.34.122.192:3000` <br>
 
 > `ECS endpoint : 3.38.172.73:3000`
 
