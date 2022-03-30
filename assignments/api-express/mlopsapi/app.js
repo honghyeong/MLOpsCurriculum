@@ -3,10 +3,13 @@ const app = express();
 const logger = require("morgan");
 require("dotenv").config();
 
+// mem DB & postgres DB
 // const userRouter = require("./routes/mem.route");
 const userRouter = require("./routes/pg.route");
 
 // app.use("/", postgresRouter); // postgres db
+
+// logger
 if (process.env.NODE_ENV === "test") {
   app.use(logger("dev"));
 }
