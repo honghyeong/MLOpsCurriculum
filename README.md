@@ -4,7 +4,7 @@ I’m an MLOps Engineer at Corca.
 <br>
 <br>
 
-# Phase 1
+## Phase 1
 
 > `EC2 endpoint : 3.34.122.192:3000` > <br>
 
@@ -13,7 +13,7 @@ I’m an MLOps Engineer at Corca.
 <br>
 <br>
 
-## summary
+### summary
 
 - Phase 1의 구성은 크게 `MLOps의 정의`, `RESTful API`, `DB`을 공부하고 Corca의 code convention을 바탕으로 `API를 개발`하고. MLOps CI/CD의 기초가 되는 `Docker`, `Docker-compose`, `AWS(EC2, ECS) 배포`에 대해서 알아보고 개발한 API를 배포한다.
 
@@ -22,7 +22,7 @@ I’m an MLOps Engineer at Corca.
 <br>
 <br>
 
-## Review
+### Review
 
 - MLOps라는 직무가 매우 생소했는데, ML product의 지속적인 학습, 테스팅, 모니터링, 배포(CI/CD)에서의 MLOps의 중요성을 배우며 우리 Corca에서 어떤 역할을 해야하는지 느끼고 필요한 기본 지식에 대한 기초를 다질 수 있었다.
 - 단순한 API를 개발함에 있어서도 DB, RESTful API 명세를 바탕으로 개발할 때 SOLID 원칙을 지키면서, 여러 예외상황을 생각한 서버를 개발하는 것이 쉽지 않다는 것을 알 수 있었다.
@@ -33,7 +33,7 @@ I’m an MLOps Engineer at Corca.
 <br>
 <br>
 
-## Feedback
+### Feedback
 
 - API 개발 명세를 바탕으로 TDD를 통해 코드를 짠다면 더욱 체계적인 서버 개발을 익힐 수 있지 않을까 생각한다. 하지만, TDD에 성능테스트가 있어서 지금 커리큘럼도 충분히 좋은 것 같다!
 - 내용이 알기쉽게 잘 정리돼있어 서버 개발과 배포에 기초가 되는 부분을 잘 배울 수 있었다.
