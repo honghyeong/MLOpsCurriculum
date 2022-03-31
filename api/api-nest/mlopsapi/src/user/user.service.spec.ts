@@ -1,79 +1,69 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
-import { fixtureCreator, TypeormFixtures } from 'typeorm-fixtures';
-import { getRepository, Repository } from 'typeorm';
-import exp from 'constants';
-import { NotFoundError } from 'rxjs';
-import { createCipheriv } from 'crypto';
 
-const mockUsers = [
-  { id: 1, name: 'sm1' },
-  { id: 2, name: 'sm2' },
-  { id: 3, name: 'sm3' },
-];
+import { NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
-export const createUserFixture = fixtureCreator<User>(
-  User,
-  function (entity, index) {
-    return {
-      name: `user${index}`,
-      age: index,
-      ...entity,
-    };
-  },
-);
+class MockUserRepository {
+  mockUsers = [
+    { id: 1, name: 'sm1', age: 26 },
+    { id: 2, name: 'sm2', age: 27 },
+    { id: 3, name: 'sm3', age: 28 },
+  ];
 
-export const userFixture = createUserFixture(mockUsers);
+  find(): User[] {
+    return this.mockUsers;
+  }
 
-const typeormConfig = {
-  url: 'postgres://postgres:postgres@localhost:5432/nest-mlops-api',
-  synchronize: true,
-  entities: [User],
-};
+  findOne(id: number): User {
+    try {
+      const found = this.mockUsers.find((user) => user.id === id);
+      return found;
+    } catch (error) {
+      throw new NotFoundException('The user is not found'); // 😅  맞는 위치일까요 ?
+    }
+  }
 
-const fixtures = new TypeormFixtures(false, {
-  type: 'postgres',
-  ...typeormConfig,
-}).addFixture(userFixture);
+  save(user: User): User {
+    // 😅 로직 구현해야하나요?
+
+    // const found = this.mockUsers.find((m) => m.id === user.id);
+    // if (found) {
+    //   this.mockUsersfind((m)=>m.)
+    // } else {
+
+    // }
+    // this.mockUsers.push(user);
+    return user;
+  }
+
+  delete(id: number): void {
+    // 😅 로직 구현해야하나요?
+  }
+}
 
 describe('UserService', () => {
   let service: UserService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'postgres',
-          password: 'postgres',
-          database: 'nest-mlops-api',
-          entities: [User],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User]),
+      providers: [
+        UserService,
+        {
+          provide: getRepositoryToken(User),
+          useClass: MockUserRepository,
+        },
       ],
-      providers: [UserService],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    await fixtures.loadFixtures();
   });
-
-  // afterAll(async () => {
-  //   await fixtures.dropFixtures();
-  // });
 
   it('should be defined service', async () => {
     expect(service).toBeDefined();
-    service.findAll().then(console.log);
-    // console.log(userService.findAll().then((user) => console.log(user)));
-    // console.log(fixtures.entities.User);
-    // console.log(fixtures.entities.User[1].name);
-    // console.log(fixtures.entities.User[1].age);
   });
 
   describe('GET /user', () => {
@@ -85,7 +75,7 @@ describe('UserService', () => {
       });
 
       it('should return all user list', async () => {
-        expect(mockUsers.length).toBe(userList.length);
+        expect(3).toBe(userList.length);
       });
 
       it('should each user has id & age & name', () => {
@@ -96,17 +86,62 @@ describe('UserService', () => {
     });
   });
 
-  describe.only('GET /user/:id', () => {
+  describe('GET /user/:id', () => {
     let findUser: User;
 
     describe('success case', () => {
       it('should return a user with property id, age, name ', async () => {
-        findUser = await service.findOneById(1);
-        console.log(findUser);
+        findUser = await service.findUserById(1);
+        // console.log(findUser);
         expect(findUser).toHaveProperty('id');
         expect(findUser).toHaveProperty('age');
         expect(findUser).toHaveProperty('name');
       });
+    });
+  });
+
+  describe('CREATE /user', () => {
+    let createdUser: User;
+
+    const newUser = new CreateUserDto();
+    newUser.age = 30;
+    newUser.name = 'sm5';
+    // const dupUser = { id: 30, name: 'sm1', age: 30 };
+
+    describe('success case', () => {
+      it('should return a created user', async () => {
+        createdUser = await service.createUser(newUser);
+        // console.log(createdUser);
+        expect(newUser.name).toEqual(createdUser.name);
+      });
+    });
+  });
+
+  describe('PUT /user/:id', () => {
+    let updatedUser: User;
+
+    const editUser = new UpdateUserDto();
+    const targetId = 1;
+    editUser.age = 30;
+    editUser.name = 'sm6';
+    // const dupUser = { id: 30, name: 'sm1', age: 30 };
+
+    describe('success case', () => {
+      it('should return a updated user', async () => {
+        updatedUser = await service.updateUser(targetId, editUser);
+        expect(editUser.name).toEqual(updatedUser.name);
+        // console.log(updatedUser);
+      });
+    });
+  });
+
+  describe('DELETE /user/:id', () => {
+    let deletedUser: User;
+    const targetId = 1;
+    it('should return a deleted user', async () => {
+      deletedUser = await service.deleteUser(targetId);
+      expect(deletedUser.id).toBe(targetId);
+      console.log(deletedUser);
     });
   });
 });
