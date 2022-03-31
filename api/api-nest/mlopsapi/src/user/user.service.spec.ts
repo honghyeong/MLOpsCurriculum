@@ -5,8 +5,14 @@ import { UserService } from './user.service';
 import { fixtureCreator, TypeormFixtures } from 'typeorm-fixtures';
 import { getRepository, Repository } from 'typeorm';
 import exp from 'constants';
+import { NotFoundError } from 'rxjs';
+import { createCipheriv } from 'crypto';
 
-const mockUsers = [{ name: 'sm1' }, { name: 'sm2' }, { name: 'sm3' }];
+const mockUsers = [
+  { id: 1, name: 'sm1' },
+  { id: 2, name: 'sm2' },
+  { id: 3, name: 'sm3' },
+];
 
 export const createUserFixture = fixtureCreator<User>(
   User,
@@ -57,12 +63,13 @@ describe('UserService', () => {
     await fixtures.loadFixtures();
   });
 
-  afterAll(async () => {
-    await fixtures.dropFixtures();
-  });
+  // afterAll(async () => {
+  //   await fixtures.dropFixtures();
+  // });
 
   it('should be defined service', async () => {
     expect(service).toBeDefined();
+    service.findAll().then(console.log);
     // console.log(userService.findAll().then((user) => console.log(user)));
     // console.log(fixtures.entities.User);
     // console.log(fixtures.entities.User[1].name);
@@ -73,7 +80,7 @@ describe('UserService', () => {
     describe('success case', () => {
       let userList: User[];
 
-      beforeEach(async () => {
+      beforeAll(async () => {
         userList = await service.findAll();
       });
 
@@ -89,16 +96,17 @@ describe('UserService', () => {
     });
   });
 
-  // describe('GET /user/:id', () => {
-  //   describe('success case', () => {
-  //     it('should return a user with property id, age, name ',()=>{
+  describe.only('GET /user/:id', () => {
+    let findUser: User;
 
-  //     });
-  //   });
-
-  //   describe('failure case', () => {
-  //     it.todo('should return 400 if invalid user id');
-  //     it.todo('should return 404 if user not found');
-  //   });
-  // });
+    describe('success case', () => {
+      it('should return a user with property id, age, name ', async () => {
+        findUser = await service.findOneById(1);
+        console.log(findUser);
+        expect(findUser).toHaveProperty('id');
+        expect(findUser).toHaveProperty('age');
+        expect(findUser).toHaveProperty('name');
+      });
+    });
+  });
 });
