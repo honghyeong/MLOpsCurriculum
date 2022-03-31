@@ -9,7 +9,11 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
+  findAll(): Promise<User[]> {
     return this.userRepository.find();
+  }
+
+  async findOneById(id: number): Promise<User> {
+    return this.userRepository.findOne(id);
   }
 }

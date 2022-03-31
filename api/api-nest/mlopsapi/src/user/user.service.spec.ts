@@ -34,8 +34,6 @@ const fixtures = new TypeormFixtures(false, {
 
 describe('UserService', () => {
   let service: UserService;
-  let repository: Repository<User>;
-  let user: User;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,7 +55,6 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     await fixtures.loadFixtures();
-    user = fixtures.entities.User.find((e) => true);
   });
 
   afterAll(async () => {
@@ -65,27 +62,43 @@ describe('UserService', () => {
   });
 
   it('should be defined service', async () => {
-    expect(UserService).toBeDefined();
+    expect(service).toBeDefined();
+    // console.log(userService.findAll().then((user) => console.log(user)));
     // console.log(fixtures.entities.User);
     // console.log(fixtures.entities.User[1].name);
     // console.log(fixtures.entities.User[1].age);
   });
 
-  // it('should be defined repository', async () => {
-  //   let repository = await getRepository(User);
-  //   expect(repository).toBeDefined();
-  // });
-
   describe('GET /user', () => {
     describe('success case', () => {
-      it('should return all user list', () => {
-        expect(mockUsers.length).toBe(fixtures.entities.User.length);
+      let userList: User[];
+
+      beforeEach(async () => {
+        userList = await service.findAll();
       });
 
-      it('should each user has id & age', () => {
-        expect(fixtures.entities.User[0]).toHaveProperty('id');
-        expect(fixtures.entities.User[0]).toHaveProperty('age');
+      it('should return all user list', async () => {
+        expect(mockUsers.length).toBe(userList.length);
+      });
+
+      it('should each user has id & age & name', () => {
+        expect(userList[0]).toHaveProperty('id');
+        expect(userList[0]).toHaveProperty('age');
+        expect(userList[0]).toHaveProperty('name');
       });
     });
   });
+
+  // describe('GET /user/:id', () => {
+  //   describe('success case', () => {
+  //     it('should return a user with property id, age, name ',()=>{
+
+  //     });
+  //   });
+
+  //   describe('failure case', () => {
+  //     it.todo('should return 400 if invalid user id');
+  //     it.todo('should return 404 if user not found');
+  //   });
+  // });
 });
