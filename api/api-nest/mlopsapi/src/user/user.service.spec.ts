@@ -77,13 +77,15 @@ describe('UserService', () => {
   // });
 
   describe('GET /user', () => {
-    it('should return all user list', () => {
-      expect(3).toBe(fixtures.entities.User.length);
-    });
+    describe('success case', () => {
+      it('should return all user list', () => {
+        expect(mockUsers.length).toBe(fixtures.entities.User.length);
+      });
 
-    it('should each user has id & age', () => {
-      expect(fixtures.entities.User[0]).toHaveProperty('id');
-      expect(fixtures.entities.User[0]).toHaveProperty('age');
+      it('should each user has id & age', () => {
+        expect(fixtures.entities.User[0]).toHaveProperty('id');
+        expect(fixtures.entities.User[0]).toHaveProperty('age');
+      });
     });
   });
 });
