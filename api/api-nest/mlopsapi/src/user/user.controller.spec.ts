@@ -3,6 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user.controller';
 import { User } from './user.entity';
 import { UserService } from './user.service';
+import { fixtureCreator } from 'typeorm-fixtures';
+
+export const createUserFixture = fixtureCreator<User>(
+  User,
+  function (entity, index) {
+    return {
+      name: `sm${index}`,
+      age: index + 10,
+      ...entity,
+    };
+  },
+);
 
 const typeormConfig = {
   url: 'postgres://postgres:postgres@localhost:5432/nest-mlops-api',
@@ -10,12 +22,14 @@ const typeormConfig = {
   entities: [User],
 };
 
+export const createUserFixture = fixtureCreator;
+
 describe('UserController', () => {
   let controller: UserController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports:[TypeOrmModule.forRoot(typeormConfig),UserService]
+      imports: [TypeOrmModule.forRoot(typeormConfig), UserService],
       controllers: [UserController],
     }).compile();
 
@@ -25,8 +39,6 @@ describe('UserController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-
 });
 
 // export const createUserFixture = fixtureCreator<User>(
