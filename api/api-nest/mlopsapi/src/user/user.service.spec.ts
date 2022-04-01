@@ -28,21 +28,10 @@ class MockUserRepository {
   }
 
   save(user: User): User {
-    // 😅 로직 구현해야하나요?
-
-    // const found = this.mockUsers.find((m) => m.id === user.id);
-    // if (found) {
-    //   this.mockUsersfind((m)=>m.)
-    // } else {
-
-    // }
-    // this.mockUsers.push(user);
     return user;
   }
 
-  delete(id: number): void {
-    // 😅 로직 구현해야하나요?
-  }
+  delete(id: number): void {}
 }
 
 describe('UserService', () => {

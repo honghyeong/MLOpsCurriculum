@@ -1,11 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserController } from './user.controller';
-import { User } from './user.entity';
-import { UserService } from './user.service';
+import { User } from '../src/user/user.entity';
+import * as request from 'supertest';
 import { fixtureCreator, TypeormFixtures } from 'typeorm-fixtures';
-import { UserModule } from './user.module';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { AppModule } from '../src/app.module';
+import { UserModule } from '../src/user/user.module';
+// import { AppModule } from 'src/app.module';
+
+//  임시로 Entity PrimaryGeneratedColumn() => PrimaryColumn()
+//  drop fixture해도 id값은 증가하는 문제가 있음
+const mockUsers = [
+  {
+    id: 1,
+    name: 'sm1',
+    age: 20,
+  },
+  {
+    id: 2,
+    name: 'sm2',
+    age: 21,
+  },
+  {
+    id: 3,
+    name: 'sm3',
+    age: 22,
+  },
+];
 
 export const createUserFixture = fixtureCreator<User>(
   User,
@@ -23,15 +44,7 @@ const typeormConfig = {
   entities: [User],
 };
 
-const userFixture = createUserFixture([
-  {
-    name: 'sm1',
-  },
-  { name: 'sm2' },
-  {
-    name: 'sm3',
-  },
-]);
+const userFixture = createUserFixture(mockUsers);
 
 const fixtures = new TypeormFixtures(false, {
   type: 'postgres',
@@ -51,6 +64,13 @@ describe('UserController & E2E testing', () => {
 
     app = module.createNestApplication();
     await app.init();
+
+    await fixtures.loadFixtures();
+  });
+
+  afterAll(async () => {
+    await fixtures.dropFixtures();
+    await app.close();
   });
 
   it('should be defined controller', () => {
