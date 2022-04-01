@@ -6,23 +6,24 @@ import { fixtureCreator, TypeormFixtures } from 'typeorm-fixtures';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { UserModule } from '../src/user/user.module';
-// import { AppModule } from 'src/app.module';
+import { EntityManager, getConnection, getRepository } from 'typeorm';
 
 //  임시로 Entity PrimaryGeneratedColumn() => PrimaryColumn()
 //  drop fixture해도 id값은 증가하는 문제가 있음
+
 const mockUsers = [
   {
-    id: 1,
+    // id: 1,
     name: 'sm1',
     age: 20,
   },
   {
-    id: 2,
+    // id: 2,
     name: 'sm2',
     age: 21,
   },
   {
-    id: 3,
+    // id: 3,
     name: 'sm3',
     age: 22,
   },
@@ -46,26 +47,37 @@ const typeormConfig = {
 
 const userFixture = createUserFixture(mockUsers);
 
+// export async function clearDB() {
+//   const repository = await getRepository(User);
+//   await repository.query(`TRUNCATE user RESTART IDENTITY CASCADE`);
+// }
+
 const fixtures = new TypeormFixtures(false, {
   type: 'postgres',
   ...typeormConfig,
 }).addFixture(userFixture);
 
-describe('UserController & E2E testing', () => {
+describe('E2E testing', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({ type: 'postgres', ...typeormConfig }),
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          ...typeormConfig,
+        }),
         UserModule,
       ],
     }).compile();
 
+    // emManger = EntityManager;
+    // queryRunner = await getConnection().createQueryRunner('master');
+
     app = module.createNestApplication();
-    await app.init();
 
     await fixtures.loadFixtures();
+    await app.init();
   });
 
   afterAll(async () => {
@@ -73,60 +85,130 @@ describe('UserController & E2E testing', () => {
     await app.close();
   });
 
+  // beforeEach(async () => {
+  //   await queryRunner.startTransmission();
+  // });
+
+  // afterEach(async () => {
+  //   await queryRunner.rollbackTransaction();
+  // });
+
   it('should be defined controller', () => {
     expect(app).toBeDefined();
   });
 
   describe('GET /user', () => {
     describe('success case', () => {
-      it.todo('should return all users');
+      it('should return all users', () => {
+        // return request(app.getHttpServer()).get('/user').expect(200).expect([]);
+        return request(app.getHttpServer()).get('/user').expect(200);
+      });
     });
   });
 
   describe('GET /user/:id', () => {
     describe('success case', () => {
-      it.todo('should return a user with id, age, name property');
+      it('should return a user with id, age, name property', () => {
+        return request(app.getHttpServer()).get('/user/1').expect(200); // db 환경 의존적
+        // .expect(mockUsers[0].id!==undefined)
+      });
     });
 
     describe('failure case', () => {
-      it.todo('should return 400 if id is not number');
-      it.todo('should return 404 if user not found');
+      it('should return 400 if id is not number', () => {
+        return request(app.getHttpServer()).get('/user/one').expect(400);
+      });
+      it('should return 404 if user not found', () => {
+        return request(app.getHttpServer()).get('/user/100').expect(404); // db 환경 의존적
+      });
     });
   });
 
   describe('CREATE /user', () => {
     describe('success case', () => {
-      it.todo('should return a created user info with id, age, name property');
+      it('should return a created user info with id, age, name property', () => {
+        return request(app.getHttpServer())
+          .post('/user')
+          .send({ name: 'ba3o', age: 30 }) // db 환경 의존적임
+          .expect(201);
+      });
     });
 
     describe('failure case', () => {
-      it.todo('should return 400 if name paramter is empty');
-      it.todo('should return 400 if age is not integer');
-      it.todo('should return 409 if user already exists');
+      it('should return 400 if name paramter is empty', () => {
+        return request(app.getHttpServer())
+          .post('/user')
+          .send({ age: 30 })
+          .expect(400);
+      });
+      it('should return 400 if age is not integer', () => {
+        return request(app.getHttpServer())
+          .post('/user')
+          .send({ age: 'one' })
+          .expect(400);
+      });
+      it('should return 409 if user already exists', () => {
+        return request(app.getHttpServer())
+          .post('/user')
+          .send({ name: 'sm1', age: 30 })
+          .expect(409);
+      });
     });
   });
 
   describe('PUT /user/:id', () => {
     describe('success case', () => {
-      it.todo('should return a updated user info with id, age, name property');
+      it('should return 200 if update success', () => {
+        return request(app.getHttpServer())
+          .put('/user/1')
+          .send({ name: 'babo', age: 30 })
+          .expect(200);
+      });
     });
 
     describe('failure case', () => {
-      it.todo('should return 400 if name paramter is empty');
-      it.todo('should return 400 if invalid age');
-      it.todo('should return 409 if user already exists');
-      it.todo('should return 404 if user is not found');
+      it('should return 400 if name paramter is empty', () => {
+        return request(app.getHttpServer())
+          .put('/user/1')
+          .send({ age: 34 })
+          .expect(400);
+      });
+      it('should return 400 if invalid age', () => {
+        return request(app.getHttpServer())
+          .put('/user/1')
+          .send({ age: 'one' })
+          .expect(400);
+      });
+      // 🚨
+      it('should return 409 if user already exists', () => {
+        return request(app.getHttpServer())
+          .put('/user/1')
+          .send({ name: 'sm2', age: 30 })
+          .expect(409);
+      });
+      it('should return 404 if user is not found', () => {
+        return request(app.getHttpServer())
+          .put('/user/300')
+          .send({ name: 'sm300', age: 30 })
+          .expect(404);
+      });
     });
   });
 
   describe('DELETE /user/:id', () => {
     describe('success case', () => {
-      it.todo('should return a deleted user info with id, age, name property');
+      it('should return a deleted user info with id, age, name property', () => {
+        return request(app.getHttpServer()).delete('/user/3').expect(200);
+      });
     });
 
     describe('failure case', () => {
-      it.todo('should return 400 if name paramter is not number');
-      it.todo('should return 404 if user is not found');
+      it('should return 400 if name paramter is not number', () => {
+        return request(app.getHttpServer()).delete('/user/one').expect(400);
+      });
+      it('should return 404 if user is not found', () => {
+        return request(app.getHttpServer()).delete('/user/999').expect(404);
+      });
     });
   });
 });

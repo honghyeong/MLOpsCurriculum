@@ -1,3 +1,4 @@
+import { IsNotEmpty, MinLength } from 'class-validator';
 import {
   Column,
   Entity,
@@ -6,10 +7,10 @@ import {
   Table,
 } from 'typeorm';
 
-@Entity({ name: 'users' })
+@Entity()
 export class User {
-  @PrimaryColumn()
-  // @PrimaryGeneratedColumn()
+  // @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })

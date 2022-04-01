@@ -31,7 +31,7 @@ export class UserController {
   }
 
   @Post('/')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
       return this.userService.createUser(createUserDto);
@@ -42,7 +42,7 @@ export class UserController {
   }
 
   @Put('/:id')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(ValidationPipe)
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -55,17 +55,3 @@ export class UserController {
     return this.userService.deleteUser(id);
   }
 }
-
-// imports: [
-//   TypeOrmModule.forRoot({
-//     type: 'postgres',
-//     host: 'localhost',
-//     port: 5432,
-//     username: 'postgres',
-//     password: 'postgres',
-//     database: 'nest-mlops-api',
-//     entities: [User],
-//     synchronize: true,
-//   }),
-//   TypeOrmModule.forFeature([User]),
-// ],

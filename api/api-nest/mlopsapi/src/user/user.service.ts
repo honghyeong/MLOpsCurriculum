@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,6 +21,10 @@ export class UserService {
   }
 
   async findUserById(id: number): Promise<User> {
+    const user = await this.userRepository.findOne(id);
+    if (!user) {
+      throw new NotFoundException();
+    }
     return this.userRepository.findOne(id);
   }
 
@@ -24,19 +33,41 @@ export class UserService {
     const newUser = new User();
     newUser.age = age;
     newUser.name = name;
-    return this.userRepository.save(newUser);
+    try {
+      return await this.userRepository.save(newUser);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException();
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const target = await this.userRepository.findOne(id);
+    if (!target) {
+      throw new NotFoundException();
+    }
     const { name, age } = updateUserDto;
     target.age = age;
     target.name = name;
-    return this.userRepository.save(target);
+    try {
+      return await this.userRepository.save(target);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException();
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 
   async deleteUser(id: number): Promise<User> {
     const target = await this.userRepository.findOne(id);
+    if (!target) {
+      throw new NotFoundException();
+    }
     await this.userRepository.delete(id);
     return target;
   }
