@@ -33,12 +33,7 @@ export class UserController {
   @Post('/')
   @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    try {
-      return this.userService.createUser(createUserDto);
-    } catch (error) {
-      console.log(error.stack);
-      console.log(error);
-    }
+    return this.userService.createUser(createUserDto);
   }
 
   @Put('/:id')
