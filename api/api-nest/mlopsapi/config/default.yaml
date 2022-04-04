@@ -1,0 +1,7 @@
+service:
+  port: 3000
+
+db:
+  type: 'postgres'
+  port: 5432
+  database: 'nest-mlops-api'

@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
-
 @Injectable()
 export class UserService {
   constructor(
@@ -23,9 +22,9 @@ export class UserService {
   async findUserById(id: number): Promise<User> {
     const user = await this.userRepository.findOne(id);
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('The user is not found');
     }
-    return this.userRepository.findOne(id);
+    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -37,7 +36,7 @@ export class UserService {
       return await this.userRepository.save(newUser);
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException();
+        throw new ConflictException('The user already exists');
       } else {
         throw new InternalServerErrorException();
       }
@@ -47,7 +46,7 @@ export class UserService {
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const target = await this.userRepository.findOne(id);
     if (!target) {
-      throw new NotFoundException();
+      throw new NotFoundException('The user is not found');
     }
     const { name, age } = updateUserDto;
     target.age = age;
@@ -56,7 +55,7 @@ export class UserService {
       return await this.userRepository.save(target);
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException();
+        throw new ConflictException('The user already exists');
       } else {
         throw new InternalServerErrorException();
       }
@@ -66,7 +65,7 @@ export class UserService {
   async deleteUser(id: number): Promise<User> {
     const target = await this.userRepository.findOne(id);
     if (!target) {
-      throw new NotFoundException();
+      throw new NotFoundException('The user is not found');
     }
     await this.userRepository.delete(id);
     return target;
