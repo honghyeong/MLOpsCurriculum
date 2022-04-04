@@ -3,8 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { config } from 'dotenv';
 import { typeormConfig } from './configs/typeorm.config';
+import { User } from './user/user.entity';
+import * as cf from 'config';
 
-console.log(process.env);
+config();
 @Module({
   imports: [TypeOrmModule.forRoot(typeormConfig), UserModule],
 })

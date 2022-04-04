@@ -7,8 +7,11 @@ config();
 
 const dbConfig = cf.get('db');
 
+// console.log('dbConfig', dbConfig);
+// console.log('env', process.env);
+
 export const typeormConfig: TypeOrmModule = {
-  type: dbConfig.type,
+  type: 'postgres',
   host: process.env.DB_HOST || dbConfig.host,
   port: process.env.DB_PORT || dbConfig.port,
   username: process.env.DB_USERNAME || dbConfig.username,
