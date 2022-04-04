@@ -17,7 +17,11 @@ import {
 import { clear } from 'console';
 
 //  임시로 Entity PrimaryGeneratedColumn() => PrimaryColumn()
-//  drop fixture해도 id값은 증가하는 문제가 있음
+//  drop fixture해도 id값은 증가하는 문제가 있음 -> typeormConfig.dropSchema=true로 해결
+
+/**
+ * test data
+ */
 
 const mockUsers = [
   {
@@ -32,6 +36,24 @@ const mockUsers = [
   },
   {
     // id: 3,
+    name: 'sm3',
+    age: 22,
+  },
+];
+
+const mockUserRes = [
+  {
+    id: 1,
+    name: 'sm1',
+    age: 20,
+  },
+  {
+    id: 2,
+    name: 'sm2',
+    age: 21,
+  },
+  {
+    id: 3,
     name: 'sm3',
     age: 22,
   },
@@ -55,13 +77,6 @@ const typeormConfig = {
 
 const userFixture = createUserFixture(mockUsers);
 
-export async function clearDB() {
-  const repository = await getRepository(User);
-
-  // await repository.query(`DROP TABLE user`);
-  await repository.query(`TRUNCATE user RESTART IDENTITY CASCADE`);
-}
-
 const fixtures = new TypeormFixtures(false, {
   type: 'postgres',
   ...typeormConfig,
@@ -83,9 +98,6 @@ describe('E2E testing', () => {
       ],
     }).compile();
 
-    // emManger = EntityManager;
-    // queryRunner = await getConnection().createQueryRunner('master');
-
     app = module.createNestApplication();
 
     await fixtures.loadFixtures();
@@ -97,14 +109,6 @@ describe('E2E testing', () => {
     await app.close();
   });
 
-  // beforeEach(async () => {
-  //   await queryRunner.startTransmission();
-  // });
-
-  // afterEach(async () => {
-  //   await queryRunner.rollbackTransaction();
-  // });
-
   it('should be defined controller', () => {
     expect(app).toBeDefined();
   });
@@ -112,7 +116,10 @@ describe('E2E testing', () => {
   describe('GET /user', () => {
     describe('success case', () => {
       it('should return all users', () => {
-        return request(app.getHttpServer()).get('/user').expect(200);
+        return request(app.getHttpServer())
+          .get('/user')
+          .expect(200)
+          .expect(mockUserRes);
         // return request(app.getHttpServer()).get('/user').expect(200);
       });
     });
@@ -121,7 +128,10 @@ describe('E2E testing', () => {
   describe('GET /user/:id', () => {
     describe('success case', () => {
       it('should return a user with id, age, name property', () => {
-        return request(app.getHttpServer()).get('/user/1').expect(200); // db 환경 의존적
+        return request(app.getHttpServer())
+          .get('/user/1')
+          .expect(200)
+          .expect(mockUserRes[0]); // db 환경 의존적
         // .expect(mockUsers[0].id!==undefined)
       });
     });
@@ -142,7 +152,8 @@ describe('E2E testing', () => {
         return request(app.getHttpServer())
           .post('/user')
           .send({ name: 'ba3o', age: 30 }) // db 환경 의존적임
-          .expect(201);
+          .expect(201)
+          .expect({ id: 4, name: 'ba3o', age: 30 });
       });
     });
 
@@ -174,7 +185,8 @@ describe('E2E testing', () => {
         return request(app.getHttpServer())
           .put('/user/1')
           .send({ name: 'babo', age: 30 })
-          .expect(200);
+          .expect(200)
+          .expect({ id: 1, name: 'babo', age: 30 });
       });
     });
 
@@ -210,7 +222,10 @@ describe('E2E testing', () => {
   describe('DELETE /user/:id', () => {
     describe('success case', () => {
       it('should return a deleted user info with id, age, name property', () => {
-        return request(app.getHttpServer()).delete('/user/3').expect(200);
+        return request(app.getHttpServer())
+          .delete('/user/3')
+          .expect(200)
+          .expect(mockUserRes[2]);
       });
     });
 
