@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
-
 @Injectable()
 export class UserService {
   constructor(
@@ -25,7 +24,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException();
     }
-    return this.userRepository.findOne(id);
+    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
