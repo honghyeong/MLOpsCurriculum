@@ -17,6 +17,8 @@ export const typeormConfig: TypeOrmModule = {
   username: process.env.DB_USERNAME || dbConfig.username,
   password: process.env.DB_PASSWORD || dbConfig.password,
   database: process.env.DB_NAME || dbConfig.database,
-  entities: [User],
+  //   dropSchema: process.env.NODE_ENV === 'test',
+  //   synchronize: process.env.NODE_ENV === 'test',
   synchronize: true,
+  entities: [User],
 };

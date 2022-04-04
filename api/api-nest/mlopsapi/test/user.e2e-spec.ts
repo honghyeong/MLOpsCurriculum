@@ -6,7 +6,15 @@ import { fixtureCreator, TypeormFixtures } from 'typeorm-fixtures';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { UserModule } from '../src/user/user.module';
-import { EntityManager, getConnection, getRepository } from 'typeorm';
+import {
+  Connection,
+  Entity,
+  EntityManager,
+  getConnection,
+  getRepository,
+  Repository,
+} from 'typeorm';
+import { clear } from 'console';
 
 //  임시로 Entity PrimaryGeneratedColumn() => PrimaryColumn()
 //  drop fixture해도 id값은 증가하는 문제가 있음
@@ -47,10 +55,12 @@ const typeormConfig = {
 
 const userFixture = createUserFixture(mockUsers);
 
-// export async function clearDB() {
-//   const repository = await getRepository(User);
-//   await repository.query(`TRUNCATE user RESTART IDENTITY CASCADE`);
-// }
+export async function clearDB() {
+  const repository = await getRepository(User);
+
+  // await repository.query(`DROP TABLE user`);
+  await repository.query(`TRUNCATE user RESTART IDENTITY CASCADE`);
+}
 
 const fixtures = new TypeormFixtures(false, {
   type: 'postgres',
@@ -66,6 +76,8 @@ describe('E2E testing', () => {
         TypeOrmModule.forRoot({
           type: 'postgres',
           ...typeormConfig,
+          dropSchema: true,
+          synchronize: true,
         }),
         UserModule,
       ],
@@ -100,8 +112,8 @@ describe('E2E testing', () => {
   describe('GET /user', () => {
     describe('success case', () => {
       it('should return all users', () => {
-        // return request(app.getHttpServer()).get('/user').expect(200).expect([]);
         return request(app.getHttpServer()).get('/user').expect(200);
+        // return request(app.getHttpServer()).get('/user').expect(200);
       });
     });
   });
