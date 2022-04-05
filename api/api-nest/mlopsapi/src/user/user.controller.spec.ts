@@ -103,7 +103,6 @@ describe('UserController', () => {
   describe('POST /user', () => {
     const user = { name: 'seokmin', age: 26 };
     const createdUser = { ...user, id: 4 };
-
     it('should return created user info with id, name, age', async () => {
       jest.spyOn(userService, 'createUser').mockResolvedValue(createdUser);
       expect(await controller.createUser(user)).toEqual(createdUser);
@@ -156,6 +155,23 @@ describe('UserController', () => {
         .mockRejectedValue(new BadRequestException());
 
       expect(controller.updateUser(targetId, user)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+  });
+
+  describe('DELETE /user', () => {
+    it('should return deleted user info with id, name, age', async () => {
+      jest.spyOn(userService, 'deleteUser').mockResolvedValue(mockUserRes[0]);
+      expect(await controller.deleteUser(1)).toEqual(mockUserRes[0]);
+    });
+
+    it('should return 400 if id is invalid', async () => {
+      jest
+        .spyOn(userService, 'deleteUser')
+        .mockRejectedValue(new BadRequestException());
+
+      expect(controller.deleteUser(parseInt('asdf'))).rejects.toThrow(
         BadRequestException,
       );
     });
