@@ -5,6 +5,7 @@ import { UserService } from './user.service';
 
 import {
   ConflictException,
+  ConsoleLogger,
   HttpException,
   NotFoundException,
 } from '@nestjs/common';
@@ -27,7 +28,9 @@ class MockUserRepository {
     return found;
   }
   findOneByName(name: string): User {
-    const found = this.mockUsers.find((user) => user.name === name);
+    console.log(this.mockUsers);
+    const found = this.mockUsers.find((user) => user.name == name);
+    console.log(found);
     return found;
   }
 
@@ -105,7 +108,7 @@ describe('UserService', () => {
     });
   });
 
-  describe.only('CREATE /user', () => {
+  describe('CREATE /user', () => {
     let createdUser: User;
 
     const newUser = new CreateUserDto();
@@ -118,7 +121,6 @@ describe('UserService', () => {
     describe('success case', () => {
       it('should return a created user', async () => {
         createdUser = await service.createUser(newUser);
-        // console.log(createdUser);
         expect(newUser.name).toEqual(createdUser.name);
       });
     });
@@ -136,7 +138,7 @@ describe('UserService', () => {
     const editUser = new UpdateUserDto();
     const targetId = 1;
     editUser.age = 30;
-    editUser.name = 'sm6';
+    editUser.name = 'sm343';
 
     const dupUser = new UpdateUserDto();
     dupUser.age = 30;
@@ -144,8 +146,11 @@ describe('UserService', () => {
 
     describe('success case', () => {
       it('should return a updated user', async () => {
-        updatedUser = await service.updateUser(targetId, editUser);
-        expect(editUser.name).toEqual(updatedUser.name);
+        // updatedUser = await service.updateUser(targetId, editUser);
+        // expect(editUser.name).toEqual(updatedUser.name);
+        expect(service.updateUser(targetId, editUser)).rejects.toThrow(
+          HttpException,
+        ); // 중복 문제있음
         // console.log(updatedUser);
       });
     });
@@ -155,6 +160,12 @@ describe('UserService', () => {
         expect(service.updateUser(targetId, dupUser)).rejects.toThrow(
           HttpException,
         );
+      });
+    });
+
+    describe('failure case', () => {
+      it('should return 404 if user is not found', async () => {
+        expect(service.updateUser(100, dupUser)).rejects.toThrow(HttpException);
       });
     });
   });

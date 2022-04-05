@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ConsoleLogger,
   Injectable,
   InternalServerErrorException,
   NotFoundException,

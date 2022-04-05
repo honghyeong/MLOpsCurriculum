@@ -124,7 +124,38 @@ describe('UserController', () => {
         .spyOn(userService, 'createUser')
         .mockRejectedValue(new BadRequestException());
 
-      expect(controller.createUser({ name: 'sofef', age: 3 })).rejects.toThrow(
+      expect(
+        controller.createUser({ name: 'sofef', age: parseInt('asdf') }),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('PUT /user', () => {
+    const user = { name: 'seokmin', age: 26 };
+    const targetId = 1;
+    const updatedUser = { ...user, id: 4 };
+
+    it('should return updated user info with id, name, age', async () => {
+      jest.spyOn(userService, 'updateUser').mockResolvedValue(updatedUser);
+      expect(await controller.updateUser(targetId, user)).toEqual(updatedUser);
+    });
+
+    it('should return 400 if id is invalid', async () => {
+      jest
+        .spyOn(userService, 'updateUser')
+        .mockRejectedValue(new BadRequestException());
+
+      expect(controller.updateUser(parseInt('asdf'), user)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should return 400 if age is not integer', async () => {
+      jest
+        .spyOn(userService, 'updateUser')
+        .mockRejectedValue(new BadRequestException());
+
+      expect(controller.updateUser(targetId, user)).rejects.toThrow(
         BadRequestException,
       );
     });
