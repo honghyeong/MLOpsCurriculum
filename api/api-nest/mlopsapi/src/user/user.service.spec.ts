@@ -150,7 +150,7 @@ describe('UserService', () => {
         // expect(editUser.name).toEqual(updatedUser.name);
         expect(service.updateUser(targetId, editUser)).rejects.toThrow(
           HttpException,
-        ); // 중복 문제있음
+        ); // 중복 문제있음 ( updateUser에서 Find해서 수정할때 문제)
         // console.log(updatedUser);
       });
     });
