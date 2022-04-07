@@ -42,3 +42,15 @@ I’m an MLOps Engineer at Corca.
 ```
 docker buildx build --platform=linux/amd64 -t <tag> .
 ```
+
+---
+
+## Phase2
+
+### Testing
+
+> Unit Testing Command : `yarn test`
+
+> E2E Testing Command : `yarn test:e2e`
+
+> Locust Testing : [Locust Testing](https://github.com/honghyeong/MLOpsCurriculum/blob/main/assignments/performance.md)

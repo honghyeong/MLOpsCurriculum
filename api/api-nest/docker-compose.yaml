@@ -1,0 +1,27 @@
+version: "3"
+services:
+  db:
+    # platform: linux/amd64
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    restart: always
+  nest:
+    build: ./mlopsapi
+    # image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/nest
+    # platform: linux/amd64
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3000:3000"
+    links:
+      - db:db
+    restart: on-failure
