@@ -4,9 +4,9 @@
 name: Node.js CI
 
 on:
-  [push]
-  # push:
-  #   branches: [main, feature/cicd]
+  # [push]
+  push:
+    branches: [feature/cicd]
 
 #   pull_request:
 #     branches: [ main ]
