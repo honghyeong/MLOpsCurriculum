@@ -3,13 +3,9 @@
 
 name: Node.js CI
 
-on:
-  # [push]
-  push:
-    branches: [feature/cicd]
+on: [pull_request]
 
-#   pull_request:
-#     branches: [ main ]
+# build와 test 분리할 때
 
 # jobs:
 #   build:
@@ -48,6 +44,8 @@ on:
 #           npm test
 #         env:
 #           CI: true
+
+# 분리 안할 때
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -65,11 +63,3 @@ jobs:
           npm install --save --legacy-peer-deps
           npm run build --if-present
           npm test
-      # - uses: actions/setup-node@v3
-      #   with:
-      #     node-version: ${{ matrix.node-version }}
-      #     cache: "npm"
-
-      # - run: npm ci
-      # - run: npm run build --if-present
-      # - run: npm test
