@@ -104,6 +104,9 @@ describe('UserController', () => {
     const user = { name: 'seokmin', age: 26 };
     const createdUser = { ...user, id: 4 };
     it('should return created user info with id, name, age', async () => {
+      controller.createUser(user);
+      expect(userService.createUser).toHaveBeenCalledWith(user);
+
       jest.spyOn(userService, 'createUser').mockResolvedValue(createdUser);
       expect(await controller.createUser(user)).toEqual(createdUser);
     });
@@ -135,6 +138,9 @@ describe('UserController', () => {
     const updatedUser = { ...user, id: 4 };
 
     it('should return updated user info with id, name, age', async () => {
+      controller.updateUser(targetId, user);
+      expect(userService.createUser).toHaveBeenCalledWith(user);
+
       jest.spyOn(userService, 'updateUser').mockResolvedValue(updatedUser);
       expect(await controller.updateUser(targetId, user)).toEqual(updatedUser);
     });
