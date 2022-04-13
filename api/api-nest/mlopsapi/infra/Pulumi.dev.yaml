@@ -1,0 +1,5 @@
+config:
+  aws:region: ap-northeast-2
+  cloud:provider: aws
+  iac:pgPassword:
+    secure: AAABALFbggS+RxlwfCH3ufDBFCst7JdrT3MgkP67gNE/4Hbn
