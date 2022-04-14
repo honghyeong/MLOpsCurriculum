@@ -11,8 +11,7 @@ const pgPassword = config.require('pgPassword');
 const pgPort = 5432;
 
 const cluster = new awsx.ecs.Cluster('mlops');
-// The data layer for the application
-// Use the 'image' property to point to a pre-built Docker image.
+
 const pgListener = new awsx.elasticloadbalancingv2.NetworkListener('db', {
   port: pgPort,
 });
@@ -46,9 +45,6 @@ const pgCache = new awsx.ecs.FargateService('db', {
 
 const pgEndpoint = pgListener.endpoint;
 
-// A custom container for the frontend, which is a Python Flask app
-// Use the 'build' property to specify a folder that contains a Dockerfile.
-// Pulumi builds the container for you and pushes to an ECR registry
 const backendListener = new awsx.elasticloadbalancingv2.NetworkListener(
   'backend',
   { port: 3000 },
