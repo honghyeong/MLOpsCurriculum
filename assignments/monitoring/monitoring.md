@@ -7,7 +7,10 @@
 아래 요청을 보내는 상황
 
 1. { "age" : 21 } : log message 출력
+   ![no-name](./name-parameter-is-empty.png)
+
 2. { "name" : "hello", "age" : "21"} : error message 출력
+   ![not-integer](./age-must-be-an-integer.png)
 
 ![logging](./logging.png)
 
