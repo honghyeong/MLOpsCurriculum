@@ -7,12 +7,11 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
     restart: always
+
   nest:
     build: ./mlopsapi
-    # image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/nest
+    image: 499340242396.dkr.ecr.ap-northeast-2.amazonaws.com/nest-mlops-monitoring
     # platform: linux/amd64
     environment:
       DB_PORT: ${DB_PORT}
