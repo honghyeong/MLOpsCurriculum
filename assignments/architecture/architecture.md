@@ -1,15 +1,30 @@
-# Oh Jeom What
+# Corca Bot Lunch Recommendation Architecture
 
-1. 컴포넌트들을 어떻게 표현해야 쉽게 이해할 수 있을까요?
+## Components
 
-- 날씨 컴포넌트
-- 직원 컴포넌트
-- 선정 로직 컴포넌트
+> Weather
 
-2. 컴포넌트와 컴포넌트 간의 통신은 어떻게 표현하는 것이 좋을까요?
-3. 모든 요소마다 그렇게 해야만 하는 명확한 이유가 있나요?
-4. 설계는 자유로운 형식으로, 보는 사람이 이해하기 쉽도록 표현해주시고 그에 대한 설명을 첨부해주세요.
-   1. [Architecture Docs](https://www.notion.so/Architecture-Docs-23b67be4f20d4cb3879140983182af83) 코르카가 실제 프로젝트에서 작성한 아키텍쳐 문서입니다. 물론 이렇게까지 구체적이거나 복잡할 필요는 없고 단순히 참고용 입니다.
-   2. 표현에 있어서 추상화를 얼마나 할 지 고려해보세요. 너무 추상적이면 설계로써의 의미가 흐려지고, 너무 구체적이면 이해하기가 어려워집니다.
+-
+
+> Corca Bot
+
+-
+
+> Restaurant Recommendation Logic
+
+- > Random Team Matching
+
+> Time Trigger
+
+- 11:30 am
+-
+
+> Restaurant DB
+
+> Review DB
+
+- 음식점 별
+
+## Description
 
 ![architecture image](./image.png)
