@@ -54,3 +54,27 @@ docker buildx build --platform=linux/amd64 -t <tag> .
 > E2E Testing Command : `yarn test:e2e`
 
 > Locust Testing : [Locust Testing](https://github.com/honghyeong/MLOpsCurriculum/blob/main/assignments/performance.md)
+
+### Summary
+
+- `Testing`, `CI/CD`, `IaC`, `Monitoring`, `LoadBalancing`, `Architecture`
+- Phase 1에서 개발한 간단한 서버를 ECS 를 통해서 배포하고, `Testing` 프레임워크에 맞는 testing library를 활용하여 Unit Testing, E2E Testing 코드를 작성한다.
+- `Github Actions` 를 활용하여 서버에 대한 코드 변경 사항을 Github에 push 할때 Unit Testing, E2E Testing, ECS 인스턴스 배포를 자동화한다.
+- 안정적인 서버를 운영하기 위해서 인프라 설정을 코드화 하는 `Iac` ( Infra as code)를 통해서 다른 환경에서도 동일한 인프라를 구축하고, 확장할 수 있다.
+- 배포한 서비스에 대해서 잘못된 접근이나 지속적인 유지보수를 `LMA` ( Logging, Monitoring, Alerting) 하며, AWS SNS, Lambda를 이용하여 CPU Utilization Alerting, Error Alerting Message을 Slack으로 날리고, 서버를 지속적으로 관찰하며 관리할 수 있다.
+- CPU Utilization을 CloudWatch를 통해 모니터링하고, 50% 를 넘으면 자동으로 ECS를 통해서 task를 늘리는 `Load Balancing` 을 통하여, 트래픽에 따라 Scale out, Scale in 하며 안정적인 서버를 운영할 수 있다.
+
+- 10 common `architecture` 에 대해서 공부하면서, 각 서비스 별로 유용한 아키텍처를 사용할 수 있다. Uber, Woowahhan, HyperConnect 등 기업에서 서비스 특성에 맞는 아키텍처 설계와 설계 이유를 살펴보며 코르카에 적합한 아키텍처를 고민하고 적절한 아키텍처를 설계해본다.
+
+### Review
+
+- Phase 1을 진행하며 알게됐던 DevOps, MLOps 의 개념은 너무나 추상적이였고, 지금 내가 코르카에 어떻게 도움이 될 수 있을지, 프로젝트에서 어떠한 역할을 담당하며, CI/CD, Monitoring, Testing 툴은 어떤 것이 있고, 활용할 수 있을지 불분명하고 불안했다.
+- MLOps Curriculum을 진행하면서, 기존에 진행되는 코르카의 다양한 프로젝트에서 MLOps가 사용했던 Github Actions, Pulumi, AWS 의 사용방법에 대해서 스스로 학습하면서 프로젝트의 흐름과 MLOps의 필요성에 대해서 구체화하고, 자신감을 키울 수 있는 시간이였다.
+- Phase 1에 비해서 맞닥뜨리는 오류나, 스스로 생각하며 공부해야할 내용이 많아졌고, 스스로를 개선해나갈 여지가 많이 느낄 수 있는 소중한 기회라고 생각했다.
+- MLOps가 사용하는 다양한 툴의 장단점을 비교하고 프로젝트에 적절하게 도입하는 역량 뿐만아니라, 유지보수와 확장이 가능한 코드를 작성하기 위한 클린아키텍쳐, 리펙토링, 클린코드 공부의 필요성을 느끼고 개발 공부도 소홀히 하지않아야겠다고 자신의 부족함을 많이 느꼈다. 앞으로 더욱 더 정진해서 코르카에서 없어서는 안될 사람이 되고싶다.
+
+### Feedback
+
+- `CI/CD` : unit testing 은 이후에 Pulumi 나 추가적인 디렉토리가 생기면서 의존성 오류가 생길 수 있는데, 쉘스크립트를 이용하거나, tsconfig.build.json 등을 이용한 각 프레임워크 별 빌드 환경을 관리하는 방법을 추가하는 것도 좋을 것 같다.
+
+- `Monitoring` : CloudWatch를 통해서 다양한 지표를 확인해볼 수 있는데, 코르카에서 유용하게 사용하거나 어떤 지표를 어떻게 활용했었다 라는 내용이 추가된다면, 모니터링의 필요성을 조금 더 강하게 느낄 수 있을 것 같다.
