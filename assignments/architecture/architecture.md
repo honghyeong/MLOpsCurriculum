@@ -1,5 +1,7 @@
 # Corca Bot Lunch Recommendation Architecture
 
+- 실시간성이 필요하지않다고 생각하여 Event drivent MSA 보다 API Gateway를 이용한 Load balancing + Micro Service Architecture 가 적합하다고 판단.
+
 ## Components
 
 > Weather
@@ -9,27 +11,27 @@
 
 > Corca Bot
 
-- 코르카 봇에 저장돼있는 Employee DB에서 Employee 정보 제공
-- 팀 선정 기능 제공 (Random Matching)
+- Employee DB의 Employee 정보를 이용하여 팀 선정 기능 제공 (Random Matching)
 - Time Trigger
   - 10:30 am : 코르카 봇으로 점심 식사 여부 체크 요청
   - 01:00 pm : 코르카 봇으로 점심 메뉴 추천 리뷰 요청
-- 점심 식사에 참여하는 팀별 Emplyoee 정보와 점심 메뉴 추천 요청을 Event Bus로 전달 (Event driven MSA)
+- 점심 식사에 참여하는 팀별 Emplyoee 정보와 점심 메뉴 추천 요청을 API Gateway로 전달 (MSA)
+- Review가 완료되면 review 결과 API Gateway로 전달
+- Recommendation 응답이 돌아오면 각 음식점별 피드백 받음
 
 > Random Recommendation
 
-- 각각의 랜덤 추천 instance는 로드밸런싱을 통해 요청 수에 따라 scale in, scale out 이 가능하다.
+- Recommendation instance는 로드밸런싱을 통해 요청 수에 따라 scale in, scale out 이 가능하다.
 
   > > Restaurant Recommendation Logic
 
-  - 팀원 정보와 날씨를 바탕으로 적절한 메뉴 추천
+  - 필터링된 음식점 정보, Employee 정보, 날씨를 바탕으로 적절한 메뉴 추천
 
-  - 점심 메뉴 추천 요청이 들어오면, API를 통해 넘어온 음식점에 맞게 Review DB 데이터를 가져온다.
+  - 점심 메뉴 추천 요청이 들어오면, 메뉴 추천 결과를 API Gateway로 response.
 
   > > Filtering Logic
 
-  - Restaurant DB를 거리순으로, 리뷰를 바탕으로 필터링한다.
-  - 각 Restaurant 별 어울리는 날씨 매칭 필터링 존재
+  - API를 통해 가져온 음식점 명단을 거리순으로, 리뷰를 바탕으로, 또는 필터링 조건을 커스터마이징하여 필터링한다.
 
 > Review DB
 
