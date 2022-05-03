@@ -1,6 +1,6 @@
 # MLOpsCurriculum
 
-I’m an MLOps Engineer at Corca.
+MLOps Engineer at Corca.
 <br>
 <br>
 
